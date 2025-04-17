@@ -14,17 +14,17 @@ namespace WorkflowCore.Providers.Redis.Services
     public class RedisLockProvider : IDistributedLockProvider
     {
         private readonly ILogger _logger;        
-        private readonly string _connectionString;
+        private readonly RedisConnectionCfg _redisConnectionCfg;
         private readonly string _prefix;
         private IConnectionMultiplexer _multiplexer;
         private RedLockFactory _redlockFactory;
         private readonly TimeSpan _lockTimeout = TimeSpan.FromMinutes(1);
         private readonly List<IRedLock> ManagedLocks = new List<IRedLock>();
 
-        public RedisLockProvider(string connectionString, string prefix, ILoggerFactory logFactory)
+        public RedisLockProvider(RedisConnectionCfg redisConnectionCfg, ILoggerFactory logFactory)
         {
-            _connectionString = connectionString;
-            _prefix = prefix;
+            _redisConnectionCfg = redisConnectionCfg;
+            _prefix = redisConnectionCfg.Prefix;
             _logger = logFactory.CreateLogger(GetType());
         }
 
@@ -72,7 +72,7 @@ namespace WorkflowCore.Providers.Redis.Services
 
         public async Task Start()
         {
-            _multiplexer = await ConnectionMultiplexer.ConnectAsync(_connectionString);           
+            _multiplexer = await RedisHelper.BuildConnectionMultiplexer(_redisConnectionCfg);
             _redlockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { new RedLockMultiplexer(_multiplexer) });
         }
 

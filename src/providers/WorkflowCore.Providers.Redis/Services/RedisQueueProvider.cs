@@ -11,7 +11,7 @@ namespace WorkflowCore.Providers.Redis.Services
     public class RedisQueueProvider : IQueueProvider
     {
         private readonly ILogger _logger;
-        private readonly string _connectionString;
+        private readonly RedisConnectionCfg _redisConnectionCfg;
         private readonly string _prefix;
 
         private IConnectionMultiplexer _multiplexer;
@@ -24,10 +24,10 @@ namespace WorkflowCore.Providers.Redis.Services
             [QueueType.Index] = "index"
         };
 
-        public RedisQueueProvider(string connectionString, string prefix, ILoggerFactory logFactory)
+        public RedisQueueProvider(RedisConnectionCfg redisConnectionCfg, ILoggerFactory logFactory)
         {
-            _connectionString = connectionString;
-            _prefix = prefix;
+            _redisConnectionCfg = redisConnectionCfg;
+            _prefix = redisConnectionCfg.Prefix;
             _logger = logFactory.CreateLogger(GetType());
         }
         
@@ -62,7 +62,7 @@ namespace WorkflowCore.Providers.Redis.Services
 
         public async Task Start()
         {
-            _multiplexer = await ConnectionMultiplexer.ConnectAsync(_connectionString);
+            _multiplexer = await RedisHelper.BuildConnectionMultiplexer(_redisConnectionCfg);
             _redis = _multiplexer.GetDatabase();
         }
 

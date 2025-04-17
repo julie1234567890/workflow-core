@@ -6,6 +6,10 @@
     <Authors>Daniel Gerlag</Authors>
     <Company />
     <Product>WorkflowCore</Product>
+      <AssemblyName>OpsGenie.WorkflowCore.DSL.Signed</AssemblyName>
+      <PackageId>OpsGenie.WorkflowCore.DSL.Signed</PackageId>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\Repos\workflow-core\src\WorkflowCore\WorkflowCore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

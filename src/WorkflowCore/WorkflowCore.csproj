@@ -4,13 +4,15 @@
     <AssemblyTitle>Workflow Core</AssemblyTitle>
     <Authors>Daniel Gerlag</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>WorkflowCore</AssemblyName>
-    <PackageId>WorkflowCore</PackageId>
+    <AssemblyName>OpsGenie.WorkflowCore.Signed</AssemblyName>
+    <PackageId>OpsGenie.WorkflowCore.Signed</PackageId>
     <PackageTags>workflow;.NET;Core;state machine</PackageTags>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <Description>Workflow Core is a light weight workflow engine targeting .NET Standard.</Description>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>WorkflowCore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,9 +30,6 @@
     <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
     <PackageReference Include="OpenTelemetry.Api" Version="1.1.0" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.0" />
-	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-		<_Parameter1>WorkflowCore.IntegrationTests</_Parameter1>
-	</AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>

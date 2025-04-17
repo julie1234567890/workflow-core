@@ -12,17 +12,17 @@ namespace WorkflowCore.Providers.Redis.Services
     public class RedisLifeCycleEventHub : ILifeCycleEventHub
     {
         private readonly ILogger _logger;
-        private readonly string _connectionString;
+        private readonly RedisConnectionCfg _redisConnectionCfg;
         private readonly string _channel;
         private ICollection<Action<LifeCycleEvent>> _subscribers = new HashSet<Action<LifeCycleEvent>>();
         private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
         private IConnectionMultiplexer _multiplexer;
         private ISubscriber _subscriber;
 
-        public RedisLifeCycleEventHub(string connectionString, string channel, ILoggerFactory logFactory)
+        public RedisLifeCycleEventHub(RedisConnectionCfg redisConnectionCfg, ILoggerFactory logFactory)
         {
-            _connectionString = connectionString;
-            _channel = channel;
+            _redisConnectionCfg = redisConnectionCfg;
+            _channel = redisConnectionCfg.Channel;
             _logger = logFactory.CreateLogger(GetType());
         }
 
@@ -32,7 +32,7 @@ namespace WorkflowCore.Providers.Redis.Services
                 throw new InvalidOperationException();
 
             var data = JsonConvert.SerializeObject(evt, _serializerSettings);
-            await _subscriber.PublishAsync(_channel, data);
+            await _subscriber.PublishAsync(new RedisChannel(_channel, RedisChannel.PatternMode.Literal), data);
         }
 
         public void Subscribe(Action<LifeCycleEvent> action)
@@ -42,9 +42,10 @@ namespace WorkflowCore.Providers.Redis.Services
 
         public async Task Start()
         {
-            _multiplexer = await ConnectionMultiplexer.ConnectAsync(_connectionString);
+            _multiplexer = await RedisHelper.BuildConnectionMultiplexer(_redisConnectionCfg);
             _subscriber = _multiplexer.GetSubscriber();
-            _subscriber.Subscribe(_channel, (channel, message) => {
+            _subscriber.Subscribe(new RedisChannel(_channel, RedisChannel.PatternMode.Literal), (channel, message) =>
+            {
                 var evt = JsonConvert.DeserializeObject(message, _serializerSettings);
                 NotifySubscribers((LifeCycleEvent)evt);
             });

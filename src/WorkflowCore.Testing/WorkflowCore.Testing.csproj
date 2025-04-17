@@ -6,6 +6,10 @@
     <AssemblyVersion>3.5.2.0</AssemblyVersion>
     <FileVersion>3.5.2.0</FileVersion>
     <Description>Facilitates testing of workflows built on Workflow-Core</Description>
+      <AssemblyName>OpsGenie.WorkflowCore.Testing.Signed</AssemblyName>
+      <PackageId>OpsGenie.WorkflowCore.Testing.Signed</PackageId>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>C:\Repos\workflow-core\src\WorkflowCore\WorkflowCore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

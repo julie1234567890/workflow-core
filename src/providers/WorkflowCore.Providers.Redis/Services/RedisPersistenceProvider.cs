@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -15,7 +14,7 @@ namespace WorkflowCore.Providers.Redis.Services
     public class RedisPersistenceProvider : IPersistenceProvider
     {
         private readonly ILogger _logger;
-        private readonly string _connectionString;
+        private readonly RedisConnectionCfg _redisConnectionCfg;
         private readonly string _prefix;
         private const string WORKFLOW_SET = "workflows";
         private const string SUBSCRIPTION_SET = "subscriptions";
@@ -25,17 +24,17 @@ namespace WorkflowCore.Providers.Redis.Services
         private readonly IConnectionMultiplexer _multiplexer;
         private readonly IDatabase _redis;
 
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
         private readonly bool _removeComplete;
 
         public bool SupportsScheduledCommands => false;
 
-        public RedisPersistenceProvider(string connectionString, string prefix, bool removeComplete, ILoggerFactory logFactory)
+        public RedisPersistenceProvider(RedisConnectionCfg redisConnectionCfg, bool removeComplete, ILoggerFactory logFactory)
         {
-            _connectionString = connectionString;
-            _prefix = prefix;
+            _redisConnectionCfg = redisConnectionCfg;
+            _prefix = redisConnectionCfg.Prefix;
             _logger = logFactory.CreateLogger(GetType());
-            _multiplexer = ConnectionMultiplexer.Connect(_connectionString);
+            _multiplexer = RedisHelper.BuildConnectionMultiplexer(_redisConnectionCfg).Result;
             _redis = _multiplexer.GetDatabase();
             _removeComplete = removeComplete;
         }
